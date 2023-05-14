@@ -2,6 +2,7 @@ const express = require('express');
 const app  = new express();
 const env =  require('dotenv').config()
 const router = require('./src/routes/api');
+const multer = require('multer')
 // const db = require('./src/database/db');
 // Security module import
 
@@ -11,7 +12,7 @@ const hpp = require('hpp')
 const cors = require('cors')
 const xss = require('xss-clean')
 const bodyParser = require('body-parser')
-
+const upload = multer()
 // Security module implement
 
 app.use(cors())
@@ -19,7 +20,10 @@ app.use(helmet())
 app.use(hpp())
 app.use(xss())
 app.use(bodyParser.json());
-
+app.use(bodyParser.urlencoded({extended:true}));
+// app.use(express.bodyParser());
+// app.use(express.json());
+// app.use(upload.any())
 // Rate Limiting
 const limiter = rateLimit({
     windowMs: 15*60*1000,
