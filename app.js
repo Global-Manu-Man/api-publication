@@ -3,8 +3,7 @@ const app  = new express();
 const env =  require('dotenv').config()
 const router = require('./src/routes/api');
 const multer = require('multer')
-// const db = require('./src/database/db');
-// Security module import
+
 
 const rateLimit = require('express-rate-limit');
 const helmet = require('helmet')
@@ -21,10 +20,7 @@ app.use(hpp())
 app.use(xss())
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended:true}));
-// app.use(express.bodyParser());
-// app.use(express.json());
-// app.use(upload.any())
-// Rate Limiting
+
 const limiter = rateLimit({
     windowMs: 15*60*1000,
     max:3000,

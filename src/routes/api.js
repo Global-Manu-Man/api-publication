@@ -47,7 +47,6 @@ const uploadToS3 = (fileData)=>{
                 console.log(err);
                 reject(err)
             }
-            console.log(data);
             return resolve(data)
 
         })
@@ -84,6 +83,7 @@ router.post("/publications",uploadImage,(request,response)=>{
     const security_elements = request.body['security_elements'];
     const status = request.body['status'];
     const social_networks = request.body['social_networks'];
+    const services_offered = request.body['services_offered'];
     const startDate = new Date(start_date);
     const endDate = new Date(end_date);
     const startTime = startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
@@ -94,13 +94,13 @@ router.post("/publications",uploadImage,(request,response)=>{
 
         if(err){
 
-            response.status(404).json({status:"Failed to insert",data:err});
+            response.send({status:"Failed to insert",data:err});
 
         }else{
                 const status_sql = `INSERT INTO status(status_id,status) VALUES ("${business_id}","${status}")`;
                 db.query(status_sql,(err)=>{
                     if(err){
-                        response.status(404).json({status:"Failed to insert",data:err});
+                        response.send({status:"Failed to insert",data:err});
                     }
                 })
   
@@ -109,7 +109,7 @@ router.post("/publications",uploadImage,(request,response)=>{
                 db.query(social_networks_sql,(err)=>{
                     if(err){
             
-                        response.status(404).json({status:"Failed to insert",data:err});
+                        response.send({status:"Failed to insert",data:err});
             
                     }
                 })
@@ -117,29 +117,48 @@ router.post("/publications",uploadImage,(request,response)=>{
                 const language_sql = `INSERT INTO languages(languages_id,language) VALUES ("${business_id}","${language}")`;
                 db.query(language_sql,(err)=>{
                     if(err){
-                        response.status(404).json({status:"Failed to insert",data:err});
-            
+                        response.send({status:"Failed to insert",data:err});
                     }
                 })
             const security_elements_sql = `INSERT INTO security_elements(security_elements_id, security_element) VALUES ("${business_id}","${security_elements}")`;
             db.query(security_elements_sql,(err)=>{
+
                 if(err){
-                    response.status(404).json({status:"Failed to insert",data:err});
+                    response.send({status:"Failed to insert",data:err});
+                }
+                
+            })
+            //services_offered
+
+            const services_offered_sql = `INSERT INTO services_offered(services_offered_id, services_offered) VALUES ("${business_id}","${services_offered}")`
+            db.query(services_offered_sql,(err)=>{
+                if(err){
+
+                    response.send({status:"Failed to insert",data:err});
+
                 }
             })
+
+        // Image
+            if(request.file){
+
+                uploadToS3(request.file.buffer).then((result)=>{
+
+                    const imgLocation = result.Location;
+                    const ImageSql = `INSERT INTO images(images_id, image_url) VALUES ("${business_id}","${imgLocation}")`;
+                    db.query(ImageSql,(err)=>{
+
+                     
+
+                })
+
+                })
+            }
+
             response.status(200).json({uid:business_id,code:200,error:"",description:description,created_at: new Date(),
             });
 
-            if(request.file){
-                uploadToS3(request.file.buffer).then((result)=>{
-                    return res.json({
-                        message:"Uploaded Successfully",
-                        imageUrl:result.Location
-                    })
-                }).catch((err)=>{
-                    console.log(err)
-                })
-            }
+
         }
 
     })
