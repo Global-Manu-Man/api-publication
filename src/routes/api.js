@@ -58,6 +58,8 @@ const uploadToS3 = (fileData)=>{
 
 router.post("/publications",uploadImage,(request,response)=>{
 
+ 
+
     const business_id = uuidv4().slice(0,10);
     const name = request.body['name'];
     const price = request.body['price'];
@@ -159,19 +161,18 @@ router.post("/publications",uploadImage,(request,response)=>{
 
                 for(let i=0;i<request.files.length;i++){
 
+                    console.log(request);
+
                     uploadToS3(request.files[i].buffer).then((result)=>{
 
                         const imgLocation = result.Location;
                       
                         const ImageSql = `INSERT INTO images(images_id, image_url) VALUES ("${business_id}","${imgLocation}")`;
-                        db.query(ImageSql,(err)=>{
-    
-                         
-                    })
+                        db.query(ImageSql)
     
                   })
                 }
-
+              
             }
 
             response.status(200).json({uid:business_id,code:200,error:"",description:description,created_at: new Date(),
