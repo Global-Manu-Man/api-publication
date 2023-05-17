@@ -161,7 +161,7 @@ router.post("/publications",uploadImage,(request,response)=>{
 
                 for(let i=0;i<request.files.length;i++){
 
-                    console.log(request);
+                 
 
                     uploadToS3(request.files[i].buffer).then((result)=>{
 
