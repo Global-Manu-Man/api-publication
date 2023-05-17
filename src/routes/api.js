@@ -1,5 +1,6 @@
 const express = require('express');
 const router = express.Router();
+const env =  require('dotenv').config()
 const { v4: uuidv4 } = require('uuid');
 const db = require('../database/db');
 const multer = require('multer');
@@ -7,10 +8,11 @@ const AWS = require('aws-sdk');
 
 const awsConfig = {
     
-    accessKeyId:"AKIAUQGAFY4NU6I67WNG", 
-    secretAccessKey:"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",
-    region: "us-west-1"
+    accessKeyId:process.env.ACCESSKEYID, 
+    secretAccessKey:process.env.SECRETACCESSKEY,
+    region: process.env.REGION
 }
+
 
 const s3 = new AWS.S3(awsConfig)
 
@@ -29,7 +31,7 @@ const uploadImage = multer({
         }
     },
 
-}).single("image");
+}).array("image",8);
 
 const uploadToS3 = (fileData)=>{
     return new Promise((resolve,reject)=>{
@@ -77,6 +79,12 @@ router.post("/publications",uploadImage,(request,response)=>{
     const publication_likes = request.body['publication_likes'];
     const questions = request.body['questions'];
     const policies_terms = request.body['policies_terms'];
+    const delivery = request.body['delivery'];
+    const latitude = request.body['latitude'];
+    const longitude = request.body['longitude'];
+    const accepts_credit_cards = request.body['accepts_credit_cards'];
+    const is_owner_verified = request.body['is_owner_verified'];
+    const parking = request.body['parking'];
     const start_date = request.body['start_date'];
     const end_date = request.body['end_date'];
     const language = request.body['language'];
@@ -89,7 +97,7 @@ router.post("/publications",uploadImage,(request,response)=>{
     const startTime = startDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
     const endTime = endDate.toLocaleTimeString([], { hour: 'numeric', minute: '2-digit', hour12: true });
     const schedule = startTime+"-"+endTime;
-    const sql = `INSERT INTO business (business_id, schedule, name, price, manager, description, event_classification, capacity_people, address_1, address_2, address_3, city, state, country, postal_code, email, cell_phone_number, event_type, business_classification, publication_likes, questions, policies_terms, start_date, end_date) VALUES ("${business_id}","${schedule}",'${name}','${price}','${manager}','${description}','${event_classification}','${capacity_people}','${address_1}','${address_2}','${address_3}','${city}','${state}','${country}','${postal_code}','${email}','${cell_phone_number}','${event_type}','${business_classification}','${publication_likes}',"${questions}",'${policies_terms}','${start_date}','${end_date}')`;
+    const sql = `INSERT INTO business (business_id, schedule, name, price, manager, description, event_classification, capacity_people, address_1, address_2, address_3, city, state, country, postal_code, email, cell_phone_number, event_type, business_classification, publication_likes, questions, policies_terms, delivery, latitude, longitude, accepts_credit_cards, is_owner_verified,start_date, end_date) VALUES ("${business_id}","${schedule}",'${name}','${price}','${manager}','${description}','${event_classification}','${capacity_people}','${address_1}','${address_2}','${address_3}','${city}','${state}','${country}','${postal_code}','${email}','${cell_phone_number}','${event_type}','${business_classification}','${publication_likes}',"${questions}",'${policies_terms}','${delivery}','${latitude}','${longitude}',"${accepts_credit_cards}","${is_owner_verified}",'${start_date}','${end_date}')`;
     db.query(sql,(err,data)=>{
 
         if(err){
@@ -139,20 +147,31 @@ router.post("/publications",uploadImage,(request,response)=>{
                 }
             })
 
+            const parking_sql = `INSERT INTO parking(parking_id,parking) VALUES ("${business_id}","${parking}")`;
+            db.query(parking_sql,(err)=>{
+
+                response.send({status:"Failed to insert",data:err});
+                
+            })
+
         // Image
-            if(request.file){
+            if(request.files && request.files.length>0 ){
 
-                uploadToS3(request.file.buffer).then((result)=>{
+                for(let i=0;i<request.files.length;i++){
 
-                    const imgLocation = result.Location;
-                    const ImageSql = `INSERT INTO images(images_id, image_url) VALUES ("${business_id}","${imgLocation}")`;
-                    db.query(ImageSql,(err)=>{
+                    uploadToS3(request.files[i].buffer).then((result)=>{
 
-                     
+                        const imgLocation = result.Location;
+                      
+                        const ImageSql = `INSERT INTO images(images_id, image_url) VALUES ("${business_id}","${imgLocation}")`;
+                        db.query(ImageSql,(err)=>{
+    
+                         
+                    })
+    
+                  })
+                }
 
-                })
-
-                })
             }
 
             response.status(200).json({uid:business_id,code:200,error:"",description:description,created_at: new Date(),
