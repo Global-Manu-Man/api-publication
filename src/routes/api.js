@@ -150,7 +150,7 @@ router.post("/publications",uploadImage,(request,response)=>{
             const parking_sql = `INSERT INTO parking(parking_id,parking) VALUES ("${business_id}","${parking}")`;
             db.query(parking_sql,(err)=>{
 
-                response.send({status:"Failed to insert",data:err});
+             
                 
             })
 
