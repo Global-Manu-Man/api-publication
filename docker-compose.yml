@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+   mysqldb:
+    container_name: mysqlcontainer
+    image: mysql:latest
+    restart: always
+    environment:
+       MYSQL_ROOT_PASSWORD: password
+       MYSQL_DATABASE: publication
+       MYSQL_USER: root
+       MYSQL_PASSWORD: 
+    volumes:
+      - db:/var/lib/mysql
+    # networks: 
+    #   - publication  
+   app:
+    container_name: publicationcontainer
+    depends_on:
+      - mysqldb
+    image: node:latest  
+    build: .
+    restart: always 
+    ports:
+      - 5000:5000
+    expose:
+      - 5000  
+    environment:
+        DB_HOST: 'mysqldb'
+        DB_USER: 'root'
+        DB_PASSWORD: ''
+        DB_NAME: 'publication'
+        DB_PORT: 3306
+    # networks:
+    #   - publication
+volumes: 
+  db:
