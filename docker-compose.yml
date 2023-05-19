@@ -6,10 +6,12 @@ services:
     image: mysql:latest
     restart: always
     environment:
-       MYSQL_ROOT_PASSWORD: password
-       MYSQL_DATABASE: publication
-       MYSQL_USER: root
-       MYSQL_PASSWORD: 
+       MYSQL_ROOT_PASSWORD: "password"
+       MYSQL_DATABASE: "publications"
+       MYSQL_USER: "root"
+       MYSQL_PASSWORD: "password"
+       
+     
     volumes:
       - db:/var/lib/mysql
     # networks: 
@@ -28,8 +30,8 @@ services:
     environment:
         DB_HOST: 'mysqldb'
         DB_USER: 'root'
-        DB_PASSWORD: ''
-        DB_NAME: 'publication'
+        DB_PASSWORD: 'password'
+        DB_NAME: 'publications'
         DB_PORT: 3306
     # networks:
     #   - publication
