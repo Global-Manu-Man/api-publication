@@ -1,0 +1,54 @@
+# Archivos generados por IDEs y editores de código
+.idea/
+.vscode/
+*.sublime-project
+*.sublime-workspace
+
+# Archivos y directorios generados por el sistema operativo
+.DS_Store
+Thumbs.db
+
+# Dependencias y directorios de dependencias
+node_modules/
+vendor/
+
+# Archivos de construcción y resultados de compilación
+build/
+dist/
+out/
+*.exe
+*.dll
+*.so
+*.dylib
+
+# Archivos de registro y archivos temporales
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+debug.log
+logs/
+tmp/
+
+# Entornos y configuraciones específicas de los desarrolladores
+.env
+.env.local
+.env.*.local
+.env.development
+.env.test
+.env.production
+
+# Archivos de configuración del editor
+.editorconfig
+.eslintcache
+*.swp
+
+# Archivos de seguridad y claves secretas
+*.key
+*.pem
+
+# Archivos de respaldo y copias de seguridad
+*.bak
+*.backup
+*.old
+*.swp
