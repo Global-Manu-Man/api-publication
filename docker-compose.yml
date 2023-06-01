@@ -6,10 +6,12 @@ services:
     image: mysql:latest
     restart: always
     environment:
-       MYSQL_ROOT_PASSWORD: "password"
+       MYSQL_ROOT_PASSWORD: "root"
        MYSQL_DATABASE: "publications"
-       MYSQL_USER: "root"
-       MYSQL_PASSWORD: "password"
+       MYSQL_USER: "admin"
+       MYSQL_PASSWORD: "root"
+       MYSQL_ALLOW_EMPTY_PASSWORD: "yes"
+       #MYSQL_RANDOM_ROOT_PASSWORD: "none"
        
      
     volumes:
@@ -18,6 +20,7 @@ services:
     #   - publication  
    app:
     container_name: publicationcontainer
+    tty: true
     depends_on:
       - mysqldb
     image: node:latest  
@@ -29,8 +32,8 @@ services:
       - 5000  
     environment:
         DB_HOST: 'mysqldb'
-        DB_USER: 'root'
-        DB_PASSWORD: 'password'
+        DB_USER: 'admin'
+        DB_PASSWORD: 'root'
         DB_NAME: 'publications'
         DB_PORT: 3306
     # networks:
